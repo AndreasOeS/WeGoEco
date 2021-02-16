@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
     //public static final String BLUETOOTH;
     //public static final String ACCESS_FINE_LOCATION;
+    public static final int REQUEST_ENABLE_BT = 100;
+    public static final int PERMISSION_CODE = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +51,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(this.getBaseContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, PERMISSION_CODE);
             }
         }
-
-
-
     }
 
     public void startActivityForResult (Intent intent, int requestCode){
