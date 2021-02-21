@@ -7,12 +7,12 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +23,10 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,9 +37,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int PERMISSION_CODE = 200;
     public static final int PERMISSION_REQUEST_CODE = 300;
     public BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
-    public Button btn;
+    public Button btn_blue;
+    public Button btn_con;
+    public Button btn_get;
     public TextView textView;
     public ArrayList<String> deviseList = new ArrayList<>();
+    public BluetoothDevice device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +51,43 @@ public class MainActivity extends AppCompatActivity {
 
 
         textView = findViewById(R.id.text);
-        btn = findViewById(R.id.btn_bluetooth);
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn_blue = findViewById(R.id.btn_bluetooth);
+        btn_con = findViewById(R.id.btn_con);
+        btn_get = findViewById(R.id.btn_get);
+
+
+
+
+        btn_con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //textView.setText("Tester 1234");
+                String addressLaptop = "00:DB:DF:C4:88:7A";
+                String addressHeadset = "88:D0:39:A4:22:49";
+                device = bluetooth.getRemoteDevice(addressLaptop);
+                device.createBond();
+                int state = device.getBondState();
+                btn_con.setText("" + state);
+            }
+        });
+
+
+        btn_get.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String data = "" + device.getUuids();
+                btn_get.setText(data);
+
+
+            }
+        });
+
+
+
+
+        btn_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 if (bluetooth.isDiscovering()){
                     bluetooth.cancelDiscovery();
                     String devises = "";
@@ -73,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void tryTwo(){
 
-        //BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
         }
@@ -89,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 // Enabled. Work with Bluetooth.
                 String mydeviceaddress = bluetooth.getAddress();
                 String mydevicename = bluetooth.getName();
-                //status = mydevicename + " : " + mydeviceaddress;
+
                 status = mydevicename + " : " + mydeviceaddress + " : " + state;
 
                 discover();
@@ -107,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         System.out.println("Test14_________________________");
@@ -119,10 +153,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
 
 
 
