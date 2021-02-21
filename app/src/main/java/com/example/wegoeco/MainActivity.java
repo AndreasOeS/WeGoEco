@@ -15,6 +15,11 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.bluetooth.*;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.common.util.JsonUtils;
@@ -28,18 +33,90 @@ public class MainActivity extends AppCompatActivity {
     //public static final String ACCESS_FINE_LOCATION;
     public static final int REQUEST_ENABLE_BT = 100;
     public static final int PERMISSION_CODE = 200;
-    public  BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    public static final int PERMISSION_REQUEST_CODE = 300;
+    public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    public Button btn;
+    public TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connectBlue();
-        discover();
 
+        //connectBlue();
+        //discover();
+        tryTwo();
+
+        textView =findViewById(R.id.text);
+        btn = findViewById(R.id.btn_bluetooth);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //textView.setText("Tester 1234");
+
+
+
+            }
+        });
 
     }
+
+    public void tryTwo(){
+
+        BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+        }
+
+        if(bluetooth != null)
+        {
+            // Continue with bluetooth setup.
+
+            String status;
+            String state = "" + bluetooth.getState();
+            if (bluetooth.isEnabled()) {
+                // Enabled. Work with Bluetooth.
+                String mydeviceaddress = bluetooth.getAddress();
+                String mydevicename = bluetooth.getName();
+                //status = mydevicename + " : " + mydeviceaddress;
+                status = mydevicename + " : " + mydeviceaddress + " : " + state;
+
+
+                discover();
+            }
+            else
+            {
+                // Disabled. Do something else.
+                status = "Bluetooth is not Enabled";
+            }
+            Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
+
+
+
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        System.out.println("Test14_________________________");
+        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
+
+
+            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
+
 
 
     public void discover(){
@@ -55,16 +132,16 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         //System.out.println("Test12_____________");
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
             System.out.println("Test10______________________________");
+            String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
-                System.out.println(deviceName + "________________________________________");
+                System.out.println("Name: " + deviceName + "________________________________________");
                 String deviceHardwareAddress = device.getAddress(); // MAC address
-                System.out.println(deviceHardwareAddress + "________________________");
+                System.out.println("Address: " + deviceHardwareAddress + "________________________");
             }
         }
     };
