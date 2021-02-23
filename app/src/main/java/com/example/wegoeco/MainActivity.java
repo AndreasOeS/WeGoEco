@@ -4,21 +4,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.ParcelUuid;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public TextView textView;
     public ArrayList<String> deviseList = new ArrayList<>();
     public BluetoothDevice device;
+    private OutputStream outputStream;
+    private InputStream inStream;
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String addressLaptop = "00:DB:DF:C4:88:7A";
                 String addressHeadset = "88:D0:39:A4:22:49";
-                device = bluetooth.getRemoteDevice(addressLaptop);
+                String addressCANBUS = "00:04:3E:9E:66:35";
+                device = bluetooth.getRemoteDevice(addressCANBUS);
                 device.createBond(); //ER IKKE EN FEJL
                 //int state = device.getBondState();
                 btn_con.setText("Connecting");
@@ -63,10 +78,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Her prøver jeg bare at hente et eller andet data
-                String data = "" + device.getUuids();
-                btn_get.setText(data);
+
+                BluetoothSocket socket = null;
+                int input = 0;
+                try {
+                    socket = connect(device);
+                    input = socket.getInputStream().read();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                textView.setText("" + input);
+
+
+
             }
         });
+
+
+
+
 
 
 
@@ -92,8 +123,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
+
+
+    public static BluetoothSocket connect(BluetoothDevice dev) throws IOException {
+        BluetoothSocket sock = null;
+        BluetoothSocket sockFallback = null;
+
+        System.out.println("Starting Bluetooth connection..");
+        try {
+            sock = dev.createRfcommSocketToServiceRecord(MY_UUID);
+            sock.connect();
+        } catch (Exception e1) {
+            System.out.println("There was an error while establishing Bluetooth connection. Falling back..");
+            Class<?> clazz = sock.getRemoteDevice().getClass();
+            Class<?>[] paramTypes = new Class<?>[]{Integer.TYPE};
+            try {
+                Method m = clazz.getMethod("createRfcommSocket", paramTypes);
+                Object[] params = new Object[]{Integer.valueOf(1)};
+                sockFallback = (BluetoothSocket) m.invoke(sock.getRemoteDevice(), params);
+                sockFallback.connect();
+                sock = sockFallback;
+            } catch (Exception e2) {
+                System.out.println("Couldn't fallback while establishing Bluetooth connection.");
+                throw new IOException(e2.getMessage());
+            }
+        }
+        return sock;
+    }
+
+
+
+
+
+
+
 
     public void tryTwo(){
 
