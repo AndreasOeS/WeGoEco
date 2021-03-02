@@ -1,5 +1,6 @@
 package com.example.wegoeco;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -61,12 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         btn_con.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 String addressLaptop = "00:DB:DF:C4:88:7A";
                 String addressHeadset = "88:D0:39:A4:22:49";
-                String addressCANBUS = "00:04:3E:9E:66:35";
-                device = bluetooth.getRemoteDevice(addressCANBUS);
+                String addressCANBUS1 = "00:04:3E:9E:66:35";
+                String addressCANBUS2 = "00:04:3E:31:5B:53";
+                device = bluetooth.getRemoteDevice(addressCANBUS2);
                 device.createBond(); //ER IKKE EN FEJL
                 //int state = device.getBondState();
                 btn_con.setText("Connecting");
@@ -80,15 +84,29 @@ public class MainActivity extends AppCompatActivity {
                 //Her prøver jeg bare at hente et eller andet data
 
                 BluetoothSocket socket = null;
-                int input = 0;
+                String input1 = "";
+                int input2 = 0;
+                String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcra 208", "atcaf0", "atS0", "atma"};
+
+                ArrayList<Integer> inputs = new ArrayList<>();
+                String output = "";
                 try {
                     socket = connect(device);
-                    input = socket.getInputStream().read();
+                    for (int i = 0;i < commands.length;i++){
+                        socket.getOutputStream().write((commands[i] + "\r").getBytes());
+                    }
+                    inputs.add(socket.getInputStream().read());
+                    //input1 = input1 + " " + inputs.get(i).toString();
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                textView.setText("" + input);
+                for (int i:inputs
+                     ) {
+                    input1 = input1 + " " + i;
+                }
+                textView.setText(input1);
 
 
 
@@ -123,6 +141,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void setUpAtCommand() {
+        //String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};
+        String[] commands = new String[]{"atz"};
+        try {
+            for (int i = 0; i < 5; i++) {
+                outputStream.write((commands[i] + "\r").getBytes());
+                outputStream.flush();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
