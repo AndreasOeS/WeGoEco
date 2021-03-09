@@ -16,15 +16,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelUuid;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         textView = findViewById(R.id.text);
         btn_blue = findViewById(R.id.btn_bluetooth);
         btn_con = findViewById(R.id.btn_con);
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 String addressHeadset = "88:D0:39:A4:22:49";
                 String addressCANBUS1 = "00:04:3E:9E:66:35";
                 String addressCANBUS2 = "00:04:3E:31:5B:53";
-                device = bluetooth.getRemoteDevice(addressCANBUS2);
+                device = bluetooth.getRemoteDevice(addressCANBUS1);
                 device.createBond(); //ER IKKE EN FEJL
                 //int state = device.getBondState();
                 btn_con.setText("Connecting");
@@ -84,32 +80,17 @@ public class MainActivity extends AppCompatActivity {
                 //Her prøver jeg bare at hente et eller andet data
 
                 BluetoothSocket socket = null;
-                String input1 = "";
-                int input2 = 0;
-                String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcra 208", "atcaf0", "atS0", "atma"};
 
-                ArrayList<Integer> inputs = new ArrayList<>();
-                String output = "";
                 try {
                     socket = connect(device);
-                    for (int i = 0;i < commands.length;i++){
-                        socket.getOutputStream().write((commands[i] + "\r").getBytes());
-                    }
-                    inputs.add(socket.getInputStream().read());
-                    //input1 = input1 + " " + inputs.get(i).toString();
-
+                    Datastream thread = new Datastream(socket);
+                    thread.start();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                for (int i:inputs
-                     ) {
-                    input1 = input1 + " " + i;
-                }
-                textView.setText(input1);
 
-
-
+                //textView.setText(input1);
             }
         });
 
