@@ -55,6 +55,20 @@ public class Datastream extends Thread{
     }
 
 
+    public ArrayList<String> ACSIITranslate(byte[] buffer){
+
+        String translatedNumber;
+        ArrayList<String> translatedCommand = new ArrayList<>();
+
+        for(int i: buffer){
+            translatedNumber = Character.toString((char)i);
+            translatedCommand.add(translatedNumber);
+        }
+
+        return translatedCommand;
+    }
+
+
 
 
 

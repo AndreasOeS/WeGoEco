@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 device.createBond(); //ER IKKE EN FEJL
                 //int state = device.getBondState();
                 btn_con.setText("Connecting");
+
             }
         });
 
