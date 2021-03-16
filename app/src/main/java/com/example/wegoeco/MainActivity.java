@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private OutputStream outputStream;
     private InputStream inStream;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public Datastream thread;
 
 
     @Override
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         btn_blue = findViewById(R.id.btn_bluetooth);
         btn_con = findViewById(R.id.btn_con);
         btn_get = findViewById(R.id.btn_get);
+
+
 
 
 
@@ -84,8 +87,9 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     socket = connect(device);
-                    Datastream thread = new Datastream(socket);
+                    thread = new Datastream(socket);
                     thread.start();
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -105,25 +109,38 @@ public class MainActivity extends AppCompatActivity {
         btn_blue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (bluetooth.isDiscovering()){
-                    bluetooth.cancelDiscovery();
-                    String devises = "";
-                    for(int i = 0; i < deviseList.size(); i++){
-                        System.out.println(deviseList.get(i));
-                        devises = devises + deviseList.get(i) + "\n";
-                    }
-                    textView.setText(devises);
-                }
-                else{
-                    textView.setText("Discovering...");
-                    for(int i = 0; i < deviseList.size(); i++){
-                        deviseList.remove(i);
-                    }
-                    tryTwo();
-                }
+
+                Firebase firebase = new Firebase();
+                String odo;
+
+
+
+
+
+//                if (bluetooth.isDiscovering()){
+//                    bluetooth.cancelDiscovery();
+//                    String devises = "";
+//                    for(int i = 0; i < deviseList.size(); i++){
+//                        System.out.println(deviseList.get(i));
+//                        devises = devises + deviseList.get(i) + "\n";
+//                    }
+//                    textView.setText(devises);
+//                }
+//                else{
+//                    textView.setText("Discovering...");
+//                    for(int i = 0; i < deviseList.size(); i++){
+//                        deviseList.remove(i);
+//                    }
+//                    tryTwo();
+//                }
             }
         });
     }
+
+    public void receiveFrame(ArrayList<String> frame){
+
+    }
+
 
     public void setUpAtCommand() {
         //String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};

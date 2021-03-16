@@ -1,6 +1,7 @@
 package com.example.wegoeco;
 
 import android.bluetooth.BluetoothSocket;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -11,7 +12,9 @@ public class Datastream extends Thread{
     private String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};
     private String input1 = "";
     private boolean isReading;
-    private String PID = "208";
+    private String PID = "2D5";
+    ArrayList<String> ACSII = new ArrayList<>();
+    ArrayList<String> allFrames = new ArrayList<>();
 
 
 
@@ -19,6 +22,8 @@ public class Datastream extends Thread{
         this.socket = socket;
 
     }
+
+
 
 
     public void run(){
@@ -32,21 +37,26 @@ public class Datastream extends Thread{
 
 
         byte[] buffer = new byte[20];
-        String data;
+        //String data = "";
         isReading = true;
 
         while (isReading){
 
+            String data = "";
             try {
                 int readBytes = socket.getInputStream().read(buffer);
                 System.out.println("Byte= " + readBytes);
-                for (int i = 0;i < buffer.length;i++){
-                    System.out.print(buffer[i] + " ");
-
+                ACSII = ACSIITranslate(buffer);
+                for (int i = 0; i < ACSII.size(); i++){
+                    System.out.print(ACSII.get(i) + " ");
+                    data = data + ACSII.get(i) + " ";
                 }
+                allFrames.add(data);
+
+                Firebase firebase = new Firebase();
+
+                firebase.upload(data);
                 //clearInput();
-
-
 
             } catch (IOException e) {
                 e.printStackTrace();
