@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/green"
+    tools:context=".LoggedInSite">
+
+
+    <LinearLayout
+        android:id="@+id/top_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whit"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/btn_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/menu"/>
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"/>
+
+
+                <TextView
+                    android:id="@+id/top_text_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score: "
+                    android:textColor="#1C9F10"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/top_text_score_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.1/5"
+                    android:textColor="#1C9F10"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+            <ImageView
+                android:id="@+id/top_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foreground="@drawable/picture"
+                android:src="@mipmap/ic_launcher"/>
+
+
+        <TextView
+            android:id="@+id/top_text_rank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Rank"
+            android:textColor="#1C9F10"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_below="@id/top_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/whitround"
+
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="3"/>
+
+
+            <TextView
+                android:id="@+id/mid_text_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Score: "
+                android:textColor="#1C9F10"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/mid_text_score_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.1/5"
+                android:textColor="#1C9F10"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="2"/>
+
+
+            <ImageView
+                android:id="@+id/btn_info"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/icons_info"
+
+                android:layout_weight=""/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/mid_text_persona"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly persona: "
+                android:textColor="#1C9F10"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/mid_text_persona_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gretha Thurnberg"
+                android:textColor="#1C9F10"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/mid_text_energiuse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Energi use: "
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/mid_text_energiuse_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12.3 kWh"
+                    android:textColor="#1C9F10"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/mid_text_energiuse_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Energi score: "
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/mid_text_energiuse_value_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4"
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/mid_text_kmprkwh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Km. pr. kWh: "
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/mid_text_kmprkwh_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.27 km."
+                    android:textColor="#1C9F10"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/mid_text_kmprkwh_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="km / kWh score: "
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/mid_text_kmprkwh_value_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textColor="#1C9F10"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/mid_text_acceleration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acceleration score: "
+                android:textColor="#1C9F10"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/mid_text_acceleration_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                android:textColor="#1C9F10"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="#1C9F10"
+        app:itemTextColor="#1C9F10"
+        app:menu="@menu/menu_nav"/>
+
+
+</RelativeLayout>
