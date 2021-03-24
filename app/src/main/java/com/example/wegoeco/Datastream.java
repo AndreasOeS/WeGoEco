@@ -78,6 +78,15 @@ public class Datastream extends Thread{
         return translatedCommand;
     }
 
+    public int hexToDeci(String hex){
+        int returnInt = 0;
+
+        returnInt = Integer.parseInt(hex);
+        // Eller Integer.decode("0x4d2")
+
+        return returnInt;
+    }
+
 
 
 
