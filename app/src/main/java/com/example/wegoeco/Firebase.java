@@ -38,7 +38,7 @@ public class Firebase {
 
     public void upload(String odometer){
         myRef.push().setValue(odometer);
-        System.out.println("_______________________" + odometer);
+        //System.out.println("_______________________" + odometer);
 
     }
 

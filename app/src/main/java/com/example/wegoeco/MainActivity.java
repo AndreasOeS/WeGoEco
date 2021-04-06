@@ -110,29 +110,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Firebase firebase = new Firebase();
-                String odo;
+//                Firebase firebase = new Firebase();
+//                String odo;
 
 
 
 
 
-//                if (bluetooth.isDiscovering()){
-//                    bluetooth.cancelDiscovery();
-//                    String devises = "";
-//                    for(int i = 0; i < deviseList.size(); i++){
-//                        System.out.println(deviseList.get(i));
-//                        devises = devises + deviseList.get(i) + "\n";
-//                    }
-//                    textView.setText(devises);
-//                }
-//                else{
-//                    textView.setText("Discovering...");
-//                    for(int i = 0; i < deviseList.size(); i++){
-//                        deviseList.remove(i);
-//                    }
-//                    tryTwo();
-//                }
+                if (bluetooth.isDiscovering()){
+                    bluetooth.cancelDiscovery();
+                    String devises = "";
+                    for(int i = 0; i < deviseList.size(); i++){
+                        System.out.println(deviseList.get(i));
+                        devises = devises + deviseList.get(i) + "\n";
+                    }
+                    textView.setText(devises);
+                }
+                else{
+                    textView.setText("Discovering...");
+                    for(int i = 0; i < deviseList.size(); i++){
+                        deviseList.remove(i);
+                    }
+                    tryTwo();
+                }
             }
         });
     }
