@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -49,15 +50,14 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_bluetooth);
 
         textView = findViewById(R.id.text);
         btn_blue = findViewById(R.id.btn_bluetooth);
         btn_con = findViewById(R.id.btn_con);
         btn_get = findViewById(R.id.btn_get);
 
-
-
+        clickButtons();
 
 
 
@@ -78,28 +78,24 @@ public class BluetoothActivity extends AppCompatActivity {
         });
 
 
+
+
+
+
+
         btn_get.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Her prøver jeg bare at hente et eller andet data
-
                 BluetoothSocket socket = null;
-
                 try {
                     socket = connect(device);
                     thread = new Datastream(socket);
                     thread.start();
-
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                //textView.setText(input1);
             }
         });
-
-
 
 
 
@@ -109,13 +105,6 @@ public class BluetoothActivity extends AppCompatActivity {
         btn_blue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                Firebase firebase = new Firebase();
-//                String odo;
-
-
-
-
 
                 if (bluetooth.isDiscovering()){
                     bluetooth.cancelDiscovery();
@@ -137,24 +126,6 @@ public class BluetoothActivity extends AppCompatActivity {
         });
     }
 
-    public void receiveFrame(ArrayList<String> frame){
-
-    }
-
-
-    public void setUpAtCommand() {
-        //String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};
-        String[] commands = new String[]{"atz"};
-        try {
-            for (int i = 0; i < 5; i++) {
-                outputStream.write((commands[i] + "\r").getBytes());
-                outputStream.flush();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public static BluetoothSocket connect(BluetoothDevice dev) throws IOException {
@@ -184,12 +155,6 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
     public void tryTwo(){
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -199,16 +164,13 @@ public class BluetoothActivity extends AppCompatActivity {
         if(bluetooth != null)
         {
             // Continue with bluetooth setup.
-
             String status;
             String state = "" + bluetooth.getState();
             if (bluetooth.isEnabled()) {
                 // Enabled. Work with Bluetooth.
                 String mydeviceaddress = bluetooth.getAddress();
                 String mydevicename = bluetooth.getName();
-
                 status = mydevicename + " : " + mydeviceaddress + " : " + state;
-
                 discover();
             }
             else
@@ -217,9 +179,7 @@ public class BluetoothActivity extends AppCompatActivity {
                 status = "Bluetooth is not Enabled";
             }
             Toast.makeText(this, status, Toast.LENGTH_LONG).show();
-
         }
-
     }
 
 
@@ -272,16 +232,8 @@ public class BluetoothActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
-
-
-
-    public void writeToDatabase(){
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-
-        myRef.setValue("Hello, World!");
+    public void clickButtons(){
+        btn_con.performClick();
+        btn_get.performClick();
     }
-
-
 }

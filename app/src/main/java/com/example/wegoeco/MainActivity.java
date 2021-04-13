@@ -3,6 +3,7 @@ package com.example.wegoeco;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -22,12 +23,9 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference myRef = database.getReference("message");
 
         //myRef.setValue("Hello, World!");
+        Intent intent = new Intent(this, BluetoothActivity.class);
+        startActivity(intent);
 
-        Bluetooth bluetooth = new Bluetooth();
-
-        bluetooth.discoverBluetooth();
-        bluetooth.connect();
-        bluetooth.startDatastream();
 
     }
 }
