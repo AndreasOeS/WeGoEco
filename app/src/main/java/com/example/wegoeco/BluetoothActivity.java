@@ -29,10 +29,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Bluetooth extends AppCompatActivity{
+
+public class BluetoothActivity extends AppCompatActivity {
 
     public static final int PERMISSION_REQUEST_CODE = 300;
     public BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
+    public Button btn_blue;
+    public Button btn_con;
+    public Button btn_get;
+    public TextView textView;
     public ArrayList<String> deviseList = new ArrayList<>();
     public BluetoothDevice device;
     private OutputStream outputStream;
@@ -40,46 +45,116 @@ public class Bluetooth extends AppCompatActivity{
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public Datastream thread;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void connect(){
-        String addressLaptop = "00:DB:DF:C4:88:7A";
-        String addressHeadset = "88:D0:39:A4:22:49";
-        String addressCANBUS1 = "00:04:3E:9E:66:35";
-        String addressCANBUS2 = "00:04:3E:31:5B:53";
-        device = bluetooth.getRemoteDevice(addressCANBUS1);
-        device.createBond();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.text);
+        btn_blue = findViewById(R.id.btn_bluetooth);
+        btn_con = findViewById(R.id.btn_con);
+        btn_get = findViewById(R.id.btn_get);
+
+
+
+
+
+
+        btn_con.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View view) {
+                String addressLaptop = "00:DB:DF:C4:88:7A";
+                String addressHeadset = "88:D0:39:A4:22:49";
+                String addressCANBUS1 = "00:04:3E:9E:66:35";
+                String addressCANBUS2 = "00:04:3E:31:5B:53";
+                device = bluetooth.getRemoteDevice(addressCANBUS1);
+                device.createBond(); //ER IKKE EN FEJL
+                //int state = device.getBondState();
+                btn_con.setText("Connecting");
+
+            }
+        });
+
+
+        btn_get.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Her prøver jeg bare at hente et eller andet data
+
+                BluetoothSocket socket = null;
+
+                try {
+                    socket = connect(device);
+                    thread = new Datastream(socket);
+                    thread.start();
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //textView.setText(input1);
+            }
+        });
+
+
+
+
+
+
+
+
+        btn_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//                Firebase firebase = new Firebase();
+//                String odo;
+
+
+
+
+
+                if (bluetooth.isDiscovering()){
+                    bluetooth.cancelDiscovery();
+                    String devises = "";
+                    for(int i = 0; i < deviseList.size(); i++){
+                        System.out.println(deviseList.get(i));
+                        devises = devises + deviseList.get(i) + "\n";
+                    }
+                    textView.setText(devises);
+                }
+                else{
+                    textView.setText("Discovering...");
+                    for(int i = 0; i < deviseList.size(); i++){
+                        deviseList.remove(i);
+                    }
+                    tryTwo();
+                }
+            }
+        });
     }
 
-    public void startDatastream(){
-        BluetoothSocket socket = null;
+    public void receiveFrame(ArrayList<String> frame){
 
+    }
+
+
+    public void setUpAtCommand() {
+        //String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};
+        String[] commands = new String[]{"atz"};
         try {
-            socket = connect(device);
-            thread = new Datastream(socket);
-            thread.start();
+            for (int i = 0; i < 5; i++) {
+                outputStream.write((commands[i] + "\r").getBytes());
+                outputStream.flush();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public void discoverBluetooth(){
-
-        if (bluetooth.isDiscovering()){
-            bluetooth.cancelDiscovery();
-            String devises = "";
-            for(int i = 0; i < deviseList.size(); i++){
-                System.out.println(deviseList.get(i));
-                devises = devises + deviseList.get(i) + "\n";
-            }
-        }
-        else{
-            for(int i = 0; i < deviseList.size(); i++){
-                deviseList.remove(i);
-            }
-            tryTwo();
-        }
-    }
-
 
 
     public static BluetoothSocket connect(BluetoothDevice dev) throws IOException {
@@ -108,22 +183,32 @@ public class Bluetooth extends AppCompatActivity{
         return sock;
     }
 
+
+
+
+
+
+
+
     public void tryTwo(){
 
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
-//        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+        }
 
         if(bluetooth != null)
         {
             // Continue with bluetooth setup.
+
             String status;
             String state = "" + bluetooth.getState();
             if (bluetooth.isEnabled()) {
                 // Enabled. Work with Bluetooth.
                 String mydeviceaddress = bluetooth.getAddress();
                 String mydevicename = bluetooth.getName();
+
                 status = mydevicename + " : " + mydeviceaddress + " : " + state;
+
                 discover();
             }
             else
@@ -131,20 +216,26 @@ public class Bluetooth extends AppCompatActivity{
                 // Disabled. Do something else.
                 status = "Bluetooth is not Enabled";
             }
-            //Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+
         }
+
     }
+
+
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         System.out.println("Test14_________________________");
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
 
-            //Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
         }else{
-            //Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     public void discover(){
 
@@ -154,6 +245,7 @@ public class Bluetooth extends AppCompatActivity{
         registerReceiver(receiver, filter);
         System.out.println("Test11________________________");
     }
+
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -167,10 +259,11 @@ public class Bluetooth extends AppCompatActivity{
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 deviseList.add("Name: " + deviceName + " " + "Address: " + deviceHardwareAddress);
-
+                textView.setText("Found " + deviseList.size() + " devises");
             }
         }
     };
+
 
     @Override
     protected void onDestroy() {
@@ -178,5 +271,17 @@ public class Bluetooth extends AppCompatActivity{
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(receiver);
     }
+
+
+
+
+    public void writeToDatabase(){
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
+    }
+
 
 }
