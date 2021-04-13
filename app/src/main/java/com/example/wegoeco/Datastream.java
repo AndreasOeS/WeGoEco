@@ -41,6 +41,7 @@ public class Datastream extends Thread{
         byte[] buffer = new byte[20];
         //String data = "";
         isReading = true;
+        boolean switchID = false;
 
         while (isReading){
 
@@ -56,35 +57,38 @@ public class Datastream extends Thread{
                 String deciData = "";
                 if (readBytes == 20 && PID.equals("2D5")){
                     deciData = soc(ACSII);
-                    System.out.println("Soc Data: " + deciData);
-//                    sendCommand(atStop);
-//                    PID = "412";
-//                    sendCommand("atcra " + PID);
-//                    sendCommand("atma");
-
+                    if (switchID){
+                        System.out.println("Soc Data: " + deciData);
+                        sendCommand(atStop);
+                        PID = "412";
+                        sendCommand("atcra " + PID);
+                        sendCommand("atma");
+                        switchID = false;
+                    }
                 }
                 if(readBytes == 20 && PID.equals("412")){
-                    deciData = odo(ACSII);
-                    System.out.println("Odo Data: " + deciData);
-//                    sendCommand(atStop);
-//                    PID = "2D5";
-//                    sendCommand("atcra " + PID);
-//                    sendCommand("atma");
-
+                    if (switchID){
+                        deciData = odo(ACSII);
+                        System.out.println("Odo Data: " + deciData);
+                        sendCommand(atStop);
+                        PID = "2D5";
+                        sendCommand("atcra " + PID);
+                        sendCommand("atma");
+                        switchID = false;
+                    }
                 }
-
-
-
-
 
                 allFrames.add(data);
 
                 Firebase firebase = new Firebase();
 
                 int decital = hexToDeci(deciData);
-                System.out.println("\n" + "Data: " + data);
-                firebase.upload(decital + "");
-                System.out.println("Decital: " + decital);
+                if (decital != -1){
+                    switchID = true;
+                    System.out.println("\n" + "Data: " + data);
+                    firebase.upload(decital + "");
+                    System.out.println("Decital: " + decital);
+                }
                 //clearInput();
 
             } catch (IOException e) {
@@ -107,7 +111,7 @@ public class Datastream extends Thread{
         return translatedCommand;
     }
 
-    //PID 2D5
+    //PID 2D5 State of Charge
     public String soc(ArrayList<String> buffer){
         String returnString = "";
 
@@ -119,10 +123,9 @@ public class Datastream extends Thread{
         return returnString;
     }
 
-    //PID 412
+    //PID 412 Odometer
     public String odo(ArrayList<String> buffer){
         String returnString = "";
-
 
         returnString = returnString + buffer.get(7);
         returnString = returnString + buffer.get(8);
@@ -131,8 +134,6 @@ public class Datastream extends Thread{
         returnString = returnString + buffer.get(11);
         returnString = returnString + buffer.get(12);
 
-
-
         return returnString;
     }
 
@@ -140,13 +141,13 @@ public class Datastream extends Thread{
 
     public int hexToDeci(String hex){
 
-        int returnInt = 0;
-        System.out.println("Hex: " + hex);
+        int returnInt = -1;
         try {
-            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">")){
+            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<")){
                 System.out.println("Fejl i hex input");
             }
             else {
+                System.out.println("Hex: " + hex);
                 returnInt = Integer.decode("0x" + hex);
 
             }
