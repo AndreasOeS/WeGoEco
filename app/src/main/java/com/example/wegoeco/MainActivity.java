@@ -1,7 +1,9 @@
 package com.example.wegoeco;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.firebase.database.DatabaseReference;
@@ -9,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,7 +21,13 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
+        //myRef.setValue("Hello, World!");
+
+        Bluetooth bluetooth = new Bluetooth();
+
+        bluetooth.discoverBluetooth();
+        bluetooth.connect();
+        bluetooth.startDatastream();
 
     }
 }

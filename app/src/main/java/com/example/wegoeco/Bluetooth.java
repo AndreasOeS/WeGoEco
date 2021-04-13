@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Bluetooth {
+public class Bluetooth extends AppCompatActivity{
 
     public static final int PERMISSION_REQUEST_CODE = 300;
     public BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -50,7 +50,7 @@ public class Bluetooth {
         device.createBond();
     }
 
-    public void getData(){
+    public void startDatastream(){
         BluetoothSocket socket = null;
 
         try {
@@ -61,6 +61,26 @@ public class Bluetooth {
             e.printStackTrace();
         }
     }
+
+    public void discoverBluetooth(){
+
+        if (bluetooth.isDiscovering()){
+            bluetooth.cancelDiscovery();
+            String devises = "";
+            for(int i = 0; i < deviseList.size(); i++){
+                System.out.println(deviseList.get(i));
+                devises = devises + deviseList.get(i) + "\n";
+            }
+        }
+        else{
+            for(int i = 0; i < deviseList.size(); i++){
+                deviseList.remove(i);
+            }
+            tryTwo();
+        }
+    }
+
+
 
     public static BluetoothSocket connect(BluetoothDevice dev) throws IOException {
         BluetoothSocket sock = null;
