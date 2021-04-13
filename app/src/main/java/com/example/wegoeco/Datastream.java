@@ -15,6 +15,7 @@ public class Datastream extends Thread {
     private String input1 = "";
     private boolean isReading;
     private String PID = "2D5";
+    boolean switchID = false;
     ArrayList<String> ACSII = new ArrayList<>();
     ArrayList<String> allFrames = new ArrayList<>();
 
@@ -25,18 +26,9 @@ public class Datastream extends Thread {
 
     public void run() {
         setUp();
-        try {
-            sendCommand("atcra " + PID);
-            sendCommand("atma");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
         byte[] buffer = new byte[20];
-        //String data = "";
         isReading = true;
-        boolean switchID = false;
+
 
         while (isReading) {
 
@@ -46,11 +38,27 @@ public class Datastream extends Thread {
                 System.out.println("Byte= " + readBytes);
                 ACSII = ACSIITranslate(buffer);
                 for (int i = 0; i < ACSII.size(); i++) {
-                    //System.out.print("Buffer:" + buffer[i] + " ");
+
                     data = data + ACSII.get(i) + " ";
                 }
+                String deciData = "";
 
-
+                if (readBytes == 20 && PID.equals("2D5")){
+                    deciData = soc(ACSII);
+                    if (switchID){
+                        System.out.println("Soc Data: " + deciData);
+                        PID = "412";
+                        stopAndStartNew();
+                    }
+                }
+                if(readBytes == 20 && PID.equals("412")){
+                    if (switchID){
+                        deciData = odo(ACSII);
+                        System.out.println("Odo Data: " + deciData);
+                        PID = "2D5";
+                        stopAndStartNew();
+                    }
+                }
 
 
                 allFrames.add(data);
@@ -70,6 +78,15 @@ public class Datastream extends Thread {
             }
         }
     }
+
+    public void stopAndStartNew() throws IOException {
+        sendCommand(atStop);
+        sendCommand("atcra " + PID);
+        sendCommand("atma");
+        switchID = false;
+    }
+
+
 
     //PID 2D5 State of Charge
     public String soc(ArrayList<String> buffer){
@@ -129,6 +146,10 @@ public class Datastream extends Thread {
             for (int i = 0;i < commands.length;i++){
                 sendCommand(commands[i]);
             }
+
+            sendCommand("atcra " + PID);
+            sendCommand("atma");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
