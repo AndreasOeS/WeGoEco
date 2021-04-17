@@ -2,33 +2,56 @@ package com.example.wegoeco;
 
 public class Trip {
 
-    public int startTime;
-    public int endTime;
-    public int startSOC;
-    public int endSOC;
-    public int startODO;
-    public int endODO;
-    public double kmperkw;
-    public double kiloWattHours = 17.6;
+    private int startTime;
+    private int endTime;
+    private int startSOC;
+    private int endSOC;
+    private int startODO;
+    private int endODO;
+    private double kmperkw;
+    private int kmDif;
+    private int SOCDif;
+    private double score;
+    private double kiloWattHours = 17.6;
+
+    public Trip(){
+
+    }
 
 
-    public Trip(int startTime, int endTime, int startSOC, int endSOC, int startODO, int endODO,  double kmperkw){
-        startTime = this.startTime;
-        endTime = this.endTime;
-        startSOC = this.startSOC;
-        endSOC = this.endSOC;
-        startODO = this.startODO;
-        endODO = this.endODO;
+    public Trip(int startTime, int endTime, int startSOC, int endSOC, int startODO, int endODO,  double kmperkw, int kmDif, int SOCDif){
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startSOC = startSOC;
+        this.endSOC = endSOC;
+        this.startODO = startODO;
+        this.endODO = endODO;
+        this.kmperkw = kmperkw;
+        this.kmDif = kmDif;
+        this.SOCDif = SOCDif;
+
+    }
+
+    public Trip(int startTime, int endTime, double kmperkw, int kmDif, int SOCDif){
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.kmperkw = kmperkw;
+        this.kmDif = kmDif;
+        this.SOCDif = SOCDif;
     }
 
     public void calKmperkw() {
+        calSOCDif();
+        calkmDif();
+        setKmperkw(kmDif / (kiloWattHours * ((double) SOCDif/1000)));
+    }
 
-        double SOCDif = getStartSOC() - getEndSOC();
-        double kmDif = getStartODO() - getEndODO();
+    public void calkmDif(){
+        setKmDif(getStartODO() - getEndODO());
+    }
 
-        kmperkw = kmDif / (kiloWattHours * (SOCDif/1000));
-
-
+    public void calSOCDif(){
+        setSOCDif(getStartSOC() - getEndSOC());
     }
 
     public int getStartTime() {
@@ -86,4 +109,22 @@ public class Trip {
     public void setKmperkw(double kmperkw) {
         this.kmperkw = kmperkw;
     }
+
+    public int getKmDif() {
+        return kmDif;
+    }
+
+    public void setKmDif(int kmDif) {
+        this.kmDif = kmDif;
+    }
+
+    public int getSOCDif() {
+        return SOCDif;
+    }
+
+    public void setSOCDif(int SOCDif) {
+        this.SOCDif = SOCDif;
+    }
+
+
 }

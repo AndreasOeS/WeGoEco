@@ -61,6 +61,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
 
 
+
         btn_con.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
@@ -124,6 +125,30 @@ public class BluetoothActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void connect(){
+        String addressLaptop = "00:DB:DF:C4:88:7A";
+        String addressHeadset = "88:D0:39:A4:22:49";
+        String addressCANBUS1 = "00:04:3E:9E:66:35";
+        String addressCANBUS2 = "00:04:3E:31:5B:53";
+        device = bluetooth.getRemoteDevice(addressCANBUS1);
+        device.createBond(); //ER IKKE EN FEJL
+        //int state = device.getBondState();
+        btn_con.setText("Connecting");
+    }
+
+
+    public void startDatastream(){
+        BluetoothSocket socket = null;
+        try {
+            socket = connect(device);
+            thread = new Datastream(socket);
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

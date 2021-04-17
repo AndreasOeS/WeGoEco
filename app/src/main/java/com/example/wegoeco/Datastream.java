@@ -14,8 +14,9 @@ public class Datastream extends Thread {
     private String atStop = "z";
     private String input1 = "";
     private boolean isReading;
-    private String PID = "2D5";
+    private String PID = "418";
     boolean switchID = false;
+    boolean isStartData;
     ArrayList<String> ACSII = new ArrayList<>();
     ArrayList<String> allFrames = new ArrayList<>();
 
@@ -25,9 +26,11 @@ public class Datastream extends Thread {
     }
 
     public void run() {
+        Trip trip = new Trip();
         setUp();
         byte[] buffer = new byte[20];
         isReading = true;
+        isStartData = true;
 
 
         while (isReading) {
@@ -43,22 +46,7 @@ public class Datastream extends Thread {
                 }
                 String deciData = "";
 
-                if (readBytes == 20 && PID.equals("2D5")){
-                    deciData = soc(ACSII);
-                    if (switchID){
-                        System.out.println("Soc Data: " + deciData);
-                        PID = "412";
-                        stopAndStartNew();
-                    }
-                }
-                if(readBytes == 20 && PID.equals("412")){
-                    if (switchID){
-                        deciData = odo(ACSII);
-                        System.out.println("Odo Data: " + deciData);
-                        PID = "2D5";
-                        stopAndStartNew();
-                    }
-                }
+                dataRead(readBytes, deciData, trip);
 
 
                 allFrames.add(data);
@@ -67,14 +55,74 @@ public class Datastream extends Thread {
 
                 int decital = hexToDeci(deciData);
                 if (decital != -1){
-                    switchID = true;
                     System.out.println("\n" + "Data: " + data);
-                    firebase.upload(decital + "");
+                    firebase.upload(trip);
                     System.out.println("Decital: " + decital);
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void dataRead(int readBytes, String deciData, Trip trip)  {
+
+        if(readBytes == 20 && PID.equals("418")){
+            deciData = gear(ACSII);
+            if (deciData.equals("82") || deciData.equals("9")){
+                System.out.println("Gear Data: " + deciData);
+                PID = "2D5";
+                try {
+                    stopAndStartNew();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(deciData.equals("78")) {
+                isReading = false;
+            }
+        }
+
+        if (readBytes == 20 && PID.equals("2D5")){
+            deciData = soc(ACSII);
+            if (Integer.parseInt(deciData) > 0 && Integer.parseInt(deciData) <= 1000){
+                System.out.println("Soc Data: " + deciData);
+                PID = "412";
+                if (isStartData){
+                    trip.setStartSOC(Integer.parseInt(deciData));
+                    trip.setStartTime((int) (System.currentTimeMillis()/1000));
+
+                }
+                else{
+                    trip.setEndSOC(Integer.parseInt(deciData));
+                    trip.setEndTime((int) (System.currentTimeMillis()/1000));
+                }
+                try {
+                    stopAndStartNew();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(readBytes == 20 && PID.equals("412")){
+            deciData = odo(ACSII);
+            if (Integer.parseInt(deciData) >= 0){
+                System.out.println("Odo Data: " + deciData);
+                PID = "418";
+                if (isStartData){
+                    trip.setStartODO(Integer.parseInt(deciData));
+                }
+                else{
+                    trip.setEndODO(Integer.parseInt(deciData));
+                }
+                isStartData = false;
+                try {
+                    stopAndStartNew();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -107,6 +155,14 @@ public class Datastream extends Thread {
         returnString = returnString + buffer.get(10);
         returnString = returnString + buffer.get(11);
         returnString = returnString + buffer.get(12);
+        return returnString;
+    }
+
+    //PID 418 Gear
+    public String gear(ArrayList<String> buffer){
+        String returnString = "";
+        returnString = returnString + buffer.get(3);
+        returnString = returnString + buffer.get(4);
         return returnString;
     }
 
