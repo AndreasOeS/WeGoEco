@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 //        Intent intent = new Intent(this, BluetoothActivity.class);
 //        startActivity(intent);
 
-        //Trip trip = new Trip();
+        Trip trip = new Trip(1,2,3,4,5,6);
 
 //        trip.setStartTime((int) System.currentTimeMillis()/1000);
 //        trip.setEndTime((int) System.currentTimeMillis()/1000);
@@ -39,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Trip uploadTrip = new Trip(trip.getStartTime(), trip.getEndTime(), trip.getKmperkw(), trip.getKmDif(), trip.getSOCDif());
-        Trip uploadTrip = new Trip(1,2,3,4,5);
+        //Trip uploadTrip = new Trip(1,2,3,4,5);
 
 
         Firebase firebase = new Firebase();
-        //firebase.upload(uploadTrip);
+        firebase.upload(trip);
 
 
     }
