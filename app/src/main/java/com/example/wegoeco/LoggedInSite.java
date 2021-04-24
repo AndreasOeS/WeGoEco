@@ -8,11 +8,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+
 import java.util.ArrayList;
 
 public class LoggedInSite extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btn_weekly, btn_mountly, btn_yestoday;
+    private BottomNavigationItemView btn_weekly, btn_mountly, btn_yestoday;
     private TextView text_top_score_value, text_top_rank, text_mid_energi_use, text_mid_energi_use_score, text_mid_kwh_pr_km, text_mid_kwh_pr_km_score, text_mid_acceleration_score, text_mid_persona, text_mid_score_value;
     private ImageView persona_image, btn_info, btn_menu;
     private String[] dataArray;
