@@ -212,7 +212,7 @@ public class Datastream extends Thread {
 
 
     public void setUp() throws IOException {
-
+            sendCommand(atStop);
             for (int i = 0;i < commands.length;i++){
                 sendCommand(commands[i]);
             }
