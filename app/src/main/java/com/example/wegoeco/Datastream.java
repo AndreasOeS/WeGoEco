@@ -1,6 +1,5 @@
 package com.example.wegoeco;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import java.io.IOException;
@@ -16,14 +15,10 @@ public class Datastream extends Thread {
     private String input1 = "";
     private boolean isReading;
     private String PID = "418";
-    private String decital;
-    boolean switchID;
+    boolean switchID = false;
     boolean isStartData;
-    boolean notLegit;
-
     ArrayList<String> ACSII = new ArrayList<>();
-    ArrayList<String> legit = new ArrayList<>();
-
+    ArrayList<String> allFrames = new ArrayList<>();
 
     public Datastream(BluetoothSocket socket) {
         this.socket = socket;
@@ -31,39 +26,16 @@ public class Datastream extends Thread {
     }
 
     public void run() {
-        legit.add("0");
-        legit.add("1");
-        legit.add("2");
-        legit.add("3");
-        legit.add("4");
-        legit.add("5");
-        legit.add("6");
-        legit.add("7");
-        legit.add("8");
-        legit.add("9");
-        legit.add("A");
-        legit.add("B");
-        legit.add("C");
-        legit.add("D");
-        legit.add("E");
-        legit.add("F");
-        legit.add(" ");
-        notLegit = false;
-        isStartData = true;
-        switchID = false;
-        isReading = true;
-
-
         Trip trip = new Trip();
         setUp();
         byte[] buffer = new byte[20];
-        String data = "";
+        isReading = true;
+        isStartData = true;
 
 
+        while (isReading) {
 
-        while (isReading && !Thread.interrupted()) {
-            System.out.println("Listening for data");
-            data = "";
+            String data = "";
             try {
                 int readBytes = socket.getInputStream().read(buffer);
                 System.out.println("Byte= " + readBytes);
@@ -71,55 +43,35 @@ public class Datastream extends Thread {
                 for (int i = 0; i < ACSII.size(); i++) {
 
                     data = data + ACSII.get(i) + " ";
-                    for (int j = 0; j < legit.size();j++){
-                        if (ACSII.get(i).equals(legit.get(j))){
-                            notLegit = true;
-                            System.out.println("FEJL!!!");
-                            isReading = false;
-
-                        }
-                    }
                 }
+                String deciData = "";
 
-                if (notLegit){
-                    break;
+                dataRead(readBytes, deciData, trip);
+
+
+                allFrames.add(data);
+
+                Firebase firebase = new Firebase();
+
+                int decital = hexToDeci(deciData);
+                if (decital != -1){
+                    System.out.println("\n" + "Data: " + data);
+                    firebase.upload(trip);
+                    System.out.println("Decital: " + decital);
                 }
-
-
-
-                dataRead(readBytes, trip);
-
-
-                //allFrames.add(data);
-
-
-
-                System.out.println("\n" + "Data: " + data);
-
-                System.out.println("Decital: " + decital);
-
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (!notLegit){
-            Firebase firebase = new Firebase();
-            firebase.upload(trip);
-        }
-        else {
-            System.out.println("Exiting run");
-            Thread.currentThread().interrupt();
-        }
     }
 
-    public void dataRead(int readBytes, Trip trip)  {
+    public void dataRead(int readBytes, String deciData, Trip trip)  {
 
         if(readBytes == 20 && PID.equals("418")){
-            decital = gear(ACSII);
-            decital = hexToDeci(decital) + "";
-            if (decital.equals("82") || decital.equals("9") && isStartData){
-                System.out.println("Gear Data: " + decital);
+            deciData = gear(ACSII);
+            if (deciData.equals("82") || deciData.equals("9")){
+                System.out.println("Gear Data: " + deciData);
                 PID = "2D5";
                 try {
                     stopAndStartNew();
@@ -127,24 +79,23 @@ public class Datastream extends Thread {
                     e.printStackTrace();
                 }
             }
-            else if(decital.equals("80") && !isStartData) {
+            else if(deciData.equals("78")) {
                 isReading = false;
             }
         }
 
         if (readBytes == 20 && PID.equals("2D5")){
-            decital = soc(ACSII);
-            decital = hexToDeci(decital) + "";
-            if (Integer.parseInt(decital) > 0 && Integer.parseInt(decital) <= 1000){
-                System.out.println("Soc Data: " + decital);
+            deciData = soc(ACSII);
+            if (Integer.parseInt(deciData) > 0 && Integer.parseInt(deciData) <= 1000){
+                System.out.println("Soc Data: " + deciData);
                 PID = "412";
                 if (isStartData){
-                    trip.setStartSOC(Integer.parseInt(decital));
+                    trip.setStartSOC(Integer.parseInt(deciData));
                     trip.setStartTime((int) (System.currentTimeMillis()/1000));
 
                 }
                 else{
-                    trip.setEndSOC(Integer.parseInt(decital));
+                    trip.setEndSOC(Integer.parseInt(deciData));
                     trip.setEndTime((int) (System.currentTimeMillis()/1000));
                 }
                 try {
@@ -156,16 +107,15 @@ public class Datastream extends Thread {
         }
 
         if(readBytes == 20 && PID.equals("412")){
-            decital = odo(ACSII);
-            decital = hexToDeci(decital) + "";
-            if (Integer.parseInt(decital) >= 0 && Integer.parseInt(decital) < 1000000){
-                System.out.println("Odo Data: " + decital);
+            deciData = odo(ACSII);
+            if (Integer.parseInt(deciData) >= 0){
+                System.out.println("Odo Data: " + deciData);
                 PID = "418";
                 if (isStartData){
-                    trip.setStartODO(Integer.parseInt(decital));
+                    trip.setStartODO(Integer.parseInt(deciData));
                 }
                 else{
-                    trip.setEndODO(Integer.parseInt(decital));
+                    trip.setEndODO(Integer.parseInt(deciData));
                 }
                 isStartData = false;
                 try {
@@ -233,8 +183,8 @@ public class Datastream extends Thread {
 
         int returnInt = -1;
         try {
-            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<") || hex.contains("�") || hex.contains("S") || hex.contains("R") || hex.contains("?")){
-                System.out.println("Fejl i hex input " + hex +" !");
+            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<")){
+                System.out.println("Fejl i hex input");
             }
             else {
                 System.out.println("Hex: " + hex);
@@ -279,6 +229,13 @@ public class Datastream extends Thread {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
+
 
 
 }

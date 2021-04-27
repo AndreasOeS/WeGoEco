@@ -47,92 +47,84 @@ public class BluetoothActivity extends AppCompatActivity {
     public Datastream thread;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
         textView = findViewById(R.id.text);
+        btn_blue = findViewById(R.id.btn_bluetooth);
+        btn_con = findViewById(R.id.btn_con);
+        btn_get = findViewById(R.id.btn_get);
 
-        connect();
-
-        startDatastream();
+        clickButtons();
 
 
 
-//        btn_blue = findViewById(R.id.btn_bluetooth);
-//        btn_con = findViewById(R.id.btn_con);
-//        btn_get = findViewById(R.id.btn_get);
-//
-//        //clickButtons();
-//
-//
-//
-//
-//        btn_con.setOnClickListener(new View.OnClickListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-//            @Override
-//            public void onClick(View view) {
-//                String addressLaptop = "00:DB:DF:C4:88:7A";
-//                String addressHeadset = "88:D0:39:A4:22:49";
-//                String addressCANBUS1 = "00:04:3E:9E:66:35";
-//                String addressCANBUS2 = "00:04:3E:31:5B:53";
-//                device = bluetooth.getRemoteDevice(addressCANBUS1);
-//                device.createBond(); //ER IKKE EN FEJL
-//                //int state = device.getBondState();
-//                btn_con.setText("Connecting");
-//
-//            }
-//        });
-//
-//
-//
-//
-//
-//
-//
-//        btn_get.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                BluetoothSocket socket = null;
-//                try {
-//                    socket = connect(device);
-//                    thread = new Datastream(socket);
-//                    thread.start();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//
-//
-//
-//
-//
-//        btn_blue.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (bluetooth.isDiscovering()){
-//                    bluetooth.cancelDiscovery();
-//                    String devises = "";
-//                    for(int i = 0; i < deviseList.size(); i++){
-//                        System.out.println(deviseList.get(i));
-//                        devises = devises + deviseList.get(i) + "\n";
-//                    }
-//                    textView.setText(devises);
-//                }
-//                else{
-//                    textView.setText("Discovering...");
-//                    for(int i = 0; i < deviseList.size(); i++){
-//                        deviseList.remove(i);
-//                    }
-//                    tryTwo();
-//                }
-//            }
-//        });
+
+        btn_con.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View view) {
+                String addressLaptop = "00:DB:DF:C4:88:7A";
+                String addressHeadset = "88:D0:39:A4:22:49";
+                String addressCANBUS1 = "00:04:3E:9E:66:35";
+                String addressCANBUS2 = "00:04:3E:31:5B:53";
+                device = bluetooth.getRemoteDevice(addressCANBUS1);
+                device.createBond(); //ER IKKE EN FEJL
+                //int state = device.getBondState();
+                btn_con.setText("Connecting");
+
+            }
+        });
+
+
+
+
+
+
+
+        btn_get.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BluetoothSocket socket = null;
+                try {
+                    socket = connect(device);
+                    thread = new Datastream(socket);
+                    thread.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
+
+
+
+        btn_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (bluetooth.isDiscovering()){
+                    bluetooth.cancelDiscovery();
+                    String devises = "";
+                    for(int i = 0; i < deviseList.size(); i++){
+                        System.out.println(deviseList.get(i));
+                        devises = devises + deviseList.get(i) + "\n";
+                    }
+                    textView.setText(devises);
+                }
+                else{
+                    textView.setText("Discovering...");
+                    for(int i = 0; i < deviseList.size(); i++){
+                        deviseList.remove(i);
+                    }
+                    tryTwo();
+                }
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -144,7 +136,7 @@ public class BluetoothActivity extends AppCompatActivity {
         device = bluetooth.getRemoteDevice(addressCANBUS1);
         device.createBond(); //ER IKKE EN FEJL
         //int state = device.getBondState();
-        //btn_con.setText("Connecting");
+        btn_con.setText("Connecting");
     }
 
 
@@ -154,23 +146,9 @@ public class BluetoothActivity extends AppCompatActivity {
             socket = connect(device);
             thread = new Datastream(socket);
             thread.start();
-            while(true){
-                if (thread.isInterrupted()){
-                    //thread.stop();
-                    //thread.start();
-                    socket.close();
-                    runAgain();
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void runAgain(){
-        startDatastream();
-
-
     }
 
 
