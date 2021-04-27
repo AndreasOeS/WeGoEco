@@ -88,7 +88,7 @@ public class Datastream extends Thread {
         if(readBytes == 20 && PID.equals("418")){
             decital = gear(ACSII);
             decital = hexToDeci(decital) + "";
-            if ((decital.equals("82") || decital.equals("9") || decital.equals("48")) && isStartData){
+            if (decital.equals("82") || decital.equals("9") && isStartData){
                 System.out.println("Gear Data: " + decital);
                 PID = "2D5";
                 try {
@@ -116,6 +116,7 @@ public class Datastream extends Thread {
                 else{
                     trip.setEndSOC(Integer.parseInt(decital));
                     trip.setEndTime((int) (System.currentTimeMillis()/1000));
+                    System.out.println("lol");
                 }
                 try {
                     stopAndStartNew();
@@ -136,6 +137,7 @@ public class Datastream extends Thread {
                 }
                 else{
                     trip.setEndODO(Integer.parseInt(decital));
+                    System.out.println("lul");
                 }
                 isStartData = false;
                 try {
