@@ -31,24 +31,7 @@ public class Datastream extends Thread {
     }
 
     public void run() {
-        legit.add("0");
-        legit.add("1");
-        legit.add("2");
-        legit.add("3");
-        legit.add("4");
-        legit.add("5");
-        legit.add("6");
-        legit.add("7");
-        legit.add("8");
-        legit.add("9");
-        legit.add("A");
-        legit.add("B");
-        legit.add("C");
-        legit.add("D");
-        legit.add("E");
-        legit.add("F");
-        legit.add(" ");
-        notLegit = false;
+
         isStartData = true;
         switchID = false;
         isReading = true;
@@ -71,27 +54,10 @@ public class Datastream extends Thread {
                 for (int i = 0; i < ACSII.size(); i++) {
 
                     data = data + ACSII.get(i) + " ";
-                    for (int j = 0; j < legit.size();j++){
-                        if (ACSII.get(i).equals(legit.get(j))){
-                            notLegit = true;
-                            System.out.println("FEJL!!!");
-                            isReading = false;
 
-                        }
-                    }
                 }
-
-                if (notLegit){
-                    break;
-                }
-
-
 
                 dataRead(readBytes, trip);
-
-
-                //allFrames.add(data);
-
 
 
                 System.out.println("\n" + "Data: " + data);
@@ -103,14 +69,8 @@ public class Datastream extends Thread {
                 e.printStackTrace();
             }
         }
-        if (!notLegit){
             Firebase firebase = new Firebase();
             firebase.upload(trip);
-        }
-        else {
-            System.out.println("Exiting run");
-            Thread.currentThread().interrupt();
-        }
     }
 
     public void dataRead(int readBytes, Trip trip)  {

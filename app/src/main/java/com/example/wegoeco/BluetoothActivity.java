@@ -154,24 +154,13 @@ public class BluetoothActivity extends AppCompatActivity {
             socket = connect(device);
             thread = new Datastream(socket);
             thread.start();
-            while(true){
-                if (thread.isInterrupted()){
-                    //thread.stop();
-                    //thread.start();
-                    socket.close();
-                    runAgain();
-                }
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void runAgain(){
-        startDatastream();
 
-
-    }
 
 
 
