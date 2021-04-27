@@ -38,7 +38,11 @@ public class Datastream extends Thread {
 
 
         Trip trip = new Trip();
-        setUp();
+        try {
+            setUp();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         byte[] buffer = new byte[20];
         String data = "";
 
@@ -193,13 +197,13 @@ public class Datastream extends Thread {
 
         int returnInt = -1;
         try {
-            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<") || hex.contains("�") || hex.contains("S") || hex.contains("R") || hex.contains("?")){
-                System.out.println("Fejl i hex input " + hex +" !");
-            }
-            else {
-                System.out.println("Hex: " + hex);
-                returnInt = Integer.decode("0x" + hex);
-            }
+//            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<") || hex.contains("�") || hex.contains("S") || hex.contains("R") || hex.contains("?")){
+//                System.out.println("Fejl i hex input " + hex +" !");
+//            }
+//            else {
+//            }
+            System.out.println("Hex: " + hex);
+            returnInt = Integer.decode("0x" + hex);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -207,8 +211,8 @@ public class Datastream extends Thread {
     }
 
 
-    public void setUp(){
-        try {
+    public void setUp() throws IOException {
+
             for (int i = 0;i < commands.length;i++){
                 sendCommand(commands[i]);
             }
@@ -216,9 +220,7 @@ public class Datastream extends Thread {
             sendCommand("atcra " + PID);
             sendCommand("atma");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
