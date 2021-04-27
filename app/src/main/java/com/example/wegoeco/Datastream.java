@@ -48,7 +48,7 @@ public class Datastream extends Thread {
 
 
 
-        while (isReading && !Thread.interrupted()) {
+        while (isReading) {
             System.out.println("Listening for data");
             data = "";
             try {
@@ -73,8 +73,14 @@ public class Datastream extends Thread {
                 e.printStackTrace();
             }
         }
-            Firebase firebase = new Firebase();
-            firebase.upload(trip);
+
+        Firebase firebase = new Firebase();
+        firebase.upload(trip);
+//        try {
+//            sendCommand("ATZ");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void dataRead(int readBytes, Trip trip)  {
@@ -82,7 +88,7 @@ public class Datastream extends Thread {
         if(readBytes == 20 && PID.equals("418")){
             decital = gear(ACSII);
             decital = hexToDeci(decital) + "";
-            if (decital.equals("82") || decital.equals("9") && isStartData){
+            if ((decital.equals("82") || decital.equals("9") || decital.equals("48")) && isStartData){
                 System.out.println("Gear Data: " + decital);
                 PID = "2D5";
                 try {
@@ -212,7 +218,7 @@ public class Datastream extends Thread {
 
 
     public void setUp() throws IOException {
-            sendCommand(atStop);
+
             for (int i = 0;i < commands.length;i++){
                 sendCommand(commands[i]);
             }
