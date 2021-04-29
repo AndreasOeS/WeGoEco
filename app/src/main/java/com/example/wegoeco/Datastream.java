@@ -1,8 +1,7 @@
 package com.example.wegoeco;
 
-import android.app.Activity;
+
 import android.bluetooth.BluetoothSocket;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,19 +9,16 @@ public class Datastream extends Thread {
 
 
     private BluetoothSocket socket;
-    private ArrayList<Integer> inputs = new ArrayList<>();
     private String[] commands = new String[]{"atsp6", "ate0", "ath1", "atcaf0", "atS0"};
     private String atStop = "z";
-    private String input1 = "";
     private boolean isReading;
     private String PID = "418";
     private String decital;
     boolean switchID;
     boolean isStartData;
-    boolean notLegit;
+
 
     ArrayList<String> ACSII = new ArrayList<>();
-    ArrayList<String> legit = new ArrayList<>();
 
 
     public Datastream(BluetoothSocket socket) {
@@ -52,22 +48,18 @@ public class Datastream extends Thread {
             System.out.println("Listening for data");
             data = "";
             try {
+
                 int readBytes = socket.getInputStream().read(buffer);
                 System.out.println("Byte= " + readBytes);
                 ACSII = ACSIITranslate(buffer);
+
                 for (int i = 0; i < ACSII.size(); i++) {
-
                     data = data + ACSII.get(i) + " ";
-
                 }
 
                 dataRead(readBytes, trip);
-
-
                 System.out.println("\n" + "Data: " + data);
-
                 System.out.println("Decital: " + decital);
-
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -76,11 +68,6 @@ public class Datastream extends Thread {
 
         Firebase firebase = new Firebase();
         firebase.upload(trip);
-//        try {
-//            sendCommand("ATZ");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void dataRead(int readBytes, Trip trip)  {
@@ -205,11 +192,6 @@ public class Datastream extends Thread {
 
         int returnInt = -1;
         try {
-//            if (hex.contains("O") || hex.contains("K") || hex.equals("") || hex.contains(">") || hex.contains("<") || hex.contains("�") || hex.contains("S") || hex.contains("R") || hex.contains("?")){
-//                System.out.println("Fejl i hex input " + hex +" !");
-//            }
-//            else {
-//            }
             System.out.println("Hex: " + hex);
             returnInt = Integer.decode("0x" + hex);
         } catch (Exception e){
@@ -224,11 +206,8 @@ public class Datastream extends Thread {
             for (int i = 0;i < commands.length;i++){
                 sendCommand(commands[i]);
             }
-
             sendCommand("atcra " + PID);
             sendCommand("atma");
-
-
     }
 
 
@@ -249,6 +228,4 @@ public class Datastream extends Thread {
             e.printStackTrace();
         }
     }
-
-
 }

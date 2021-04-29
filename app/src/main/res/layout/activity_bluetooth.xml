@@ -22,29 +22,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btn_bluetooth"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="Find"
-            >
-        </Button>
-
-        <Button
-            android:id="@+id/btn_con"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="Connect"
-            >
-        </Button>
-
-        <Button
-            android:id="@+id/btn_get"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="Get data"
-            >
-        </Button>
 
     </LinearLayout>
 
