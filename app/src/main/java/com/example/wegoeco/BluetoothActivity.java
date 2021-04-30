@@ -3,6 +3,7 @@ package com.example.wegoeco;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -12,6 +13,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
@@ -24,10 +27,14 @@ public class BluetoothActivity extends AppCompatActivity {
 
     public BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
     public TextView textView;
+    public Button startKnap;
+    public Button endKnap;
     public ArrayList<String> deviseList = new ArrayList<>();
     public BluetoothDevice device;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public Datastream thread;
+    public Datastream thread2;
+    private Activity activity;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -36,8 +43,32 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         textView = findViewById(R.id.text);
-        connect();
-        startDatastream();
+        startKnap = findViewById(R.id.btn_start);
+        endKnap = findViewById(R.id.btn_end);
+
+
+        startKnap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connect();
+                startDatastream(true);
+            }
+        });
+
+        endKnap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startDatastream(false);
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onStart() {
+        super.onStart();
+//        connect();
+//        startDatastream();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -49,12 +80,16 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
 
-    public void startDatastream(){
+    public void startDatastream(boolean isStartData){
         BluetoothSocket socket = null;
         try {
-            socket = connect(device);
-            thread = new Datastream(socket);
+            if (isStartData){
+                socket = connect(device);
+
+            }
+            thread = new Datastream(socket, activity);
             thread.start();
+            textView.setText("Listening for data");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,7 +100,9 @@ public class BluetoothActivity extends AppCompatActivity {
 
 
 
+
     public static BluetoothSocket connect(BluetoothDevice dev) throws IOException {
+
         BluetoothSocket sock = null;
         BluetoothSocket sockFallback = null;
 
@@ -96,6 +133,9 @@ public class BluetoothActivity extends AppCompatActivity {
 
 
 
+
+
+
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         System.out.println("Test14_________________________");
@@ -106,26 +146,4 @@ public class BluetoothActivity extends AppCompatActivity {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
-
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            System.out.println("Test10______________________________");
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                deviseList.add("Name: " + deviceName + " " + "Address: " + deviceHardwareAddress);
-                textView.setText("Found " + deviseList.size() + " devises");
-            }
-        }
-    };
 }

@@ -2,7 +2,7 @@ package com.example.wegoeco;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,12 +19,17 @@ public class BluetoothActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth2);
         textView = findViewById(R.id.text);
         startKnap = findViewById(R.id.btn_start);
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (!bluetoothAdapter.isEnabled()){
+            bluetoothAdapter.enable();
+        }
 
         startKnap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                datastream2.readData();
+                datastream2.readData(bluetoothAdapter);
                 shift();
                 startKnap.setEnabled(false);
             }

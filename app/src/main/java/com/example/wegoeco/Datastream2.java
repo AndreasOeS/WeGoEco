@@ -4,9 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,12 +26,13 @@ public class Datastream2 {
 
 
     //bluetooth
-    public BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
+    public BluetoothAdapter bluetooth;
     public BluetoothDevice device;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
 
-    public boolean readData() {
+    public boolean readData(BluetoothAdapter bluetooth) {
+        this.bluetooth = bluetooth;
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -52,6 +51,8 @@ public class Datastream2 {
 
                 try {
                     setUp();
+                    sendCommand("atcra " + PID);
+                    sendCommand("atma");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -88,6 +89,7 @@ public class Datastream2 {
         return true;
     }
     public void dataRead(int readBytes, Trip trip)  {
+
 
         if(readBytes == 20 && PID.equals("418")){
             decital = gear(ACSII);
@@ -153,7 +155,9 @@ public class Datastream2 {
                     isReading = false;
                     Firebase firebase = new Firebase();
                     firebase.upload(trip);
+                    clearInput();
                     try {
+                        sendCommand("z");
                         socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -231,12 +235,13 @@ public class Datastream2 {
 
 
     public void setUp() throws IOException {
-        sendCommand(atStop);
+        //sendCommand(atStop);
         for (int i = 0;i < commands.length;i++){
             sendCommand(commands[i]);
+            socket.getOutputStream().flush();
         }
-        sendCommand("atcra " + PID);
-        sendCommand("atma");
+        clearInput();
+
     }
 
 
@@ -265,13 +270,10 @@ public class Datastream2 {
 
 
 
-
-
-
-
     // BLUE TOOTH
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public BluetoothSocket connect() throws IOException {
+
 
         String addressCANBUS1 = "00:04:3E:9E:66:35";
         String addressCANBUS2 = "00:04:3E:31:5B:53";

@@ -23,6 +23,23 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Start"
+            >
+        </Button>
+
+        <Button
+            android:id="@+id/btn_end"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="End"
+            >
+        </Button>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

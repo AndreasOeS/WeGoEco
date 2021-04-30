@@ -1,7 +1,10 @@
 package com.example.wegoeco;
 
 
+import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,29 +19,32 @@ public class Datastream extends Thread {
     private String decital;
     boolean switchID;
     boolean isStartData;
+    private Activity activity;
 
 
     ArrayList<String> ACSII = new ArrayList<>();
 
 
-    public Datastream(BluetoothSocket socket) {
+    public Datastream(BluetoothSocket socket, Activity activity) {
         this.socket = socket;
+        this.activity = activity;
 
     }
 
     public void run() {
 
-        isStartData = true;
-        switchID = false;
-        isReading = true;
-
-
         Trip trip = new Trip();
         try {
+
             setUp();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        isStartData = true;
+        switchID = false;
+        isReading = true;
+
         byte[] buffer = new byte[20];
         String data = "";
 
@@ -46,6 +52,7 @@ public class Datastream extends Thread {
 
         while (isReading) {
             System.out.println("Listening for data");
+
             data = "";
             try {
 
@@ -64,13 +71,17 @@ public class Datastream extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            clearInput();
         }
 
         Firebase firebase = new Firebase();
         firebase.upload(trip);
+
+
     }
 
-    public void dataRead(int readBytes, Trip trip)  {
+    public void dataRead(int readBytes, Trip trip) throws IOException {
 
         if(readBytes == 20 && PID.equals("418")){
             decital = gear(ACSII);
@@ -86,6 +97,7 @@ public class Datastream extends Thread {
             }
             else if(decital.equals("80") && !isStartData) {
                 isReading = false;
+                sendCommand(atStop);
             }
         }
 
@@ -103,7 +115,6 @@ public class Datastream extends Thread {
                 else{
                     trip.setEndSOC(Integer.parseInt(decital));
                     trip.setEndTime((int) (System.currentTimeMillis()/1000));
-                    System.out.println("lol");
                 }
                 try {
                     stopAndStartNew();
@@ -121,12 +132,12 @@ public class Datastream extends Thread {
                 PID = "418";
                 if (isStartData){
                     trip.setStartODO(Integer.parseInt(decital));
+                    isStartData = false;
                 }
                 else{
                     trip.setEndODO(Integer.parseInt(decital));
-                    System.out.println("lul");
                 }
-                isStartData = false;
+
                 try {
                     stopAndStartNew();
                 } catch (IOException e) {
@@ -141,6 +152,10 @@ public class Datastream extends Thread {
         sendCommand("atcra " + PID);
         sendCommand("atma");
         switchID = false;
+    }
+
+    public void toast(String message){
+        //Toast.makeText(activity.getParent(), me, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -197,17 +212,61 @@ public class Datastream extends Thread {
         } catch (Exception e){
             e.printStackTrace();
         }
+
+
         return returnInt;
+    }
+
+    boolean test2;
+    boolean test3;
+    ArrayList<String> listOfHex;
+
+    public boolean tester(String hex){
+        test2 = true;
+        listOfHex = new ArrayList<>();
+        listOfHex.add("0");
+        listOfHex.add("1");
+        listOfHex.add("2");
+        listOfHex.add("3");
+        listOfHex.add("4");
+        listOfHex.add("5");
+        listOfHex.add("6");
+        listOfHex.add("7");
+        listOfHex.add("8");
+        listOfHex.add("9");
+        listOfHex.add("A");
+        listOfHex.add("B");
+        listOfHex.add("C");
+        listOfHex.add("D");
+        listOfHex.add("E");
+        listOfHex.add("F");
+        listOfHex.add(" ");
+
+        for (int i = 0; i < hex.length(); i++){
+            test3 = false;
+            System.out.println("hex is this value: " + hex.indexOf(i));
+            for (String h : listOfHex) {
+                System.out.println("This is what i ompare to " + h);
+                if (h.equals(hex.indexOf(i)))
+                    test3 = true;
+            }
+            if (!test3)
+                test2 = false;
+        }
+
+        return test2;
     }
 
 
     public void setUp() throws IOException {
-            sendCommand(atStop);
-            for (int i = 0;i < commands.length;i++){
-                sendCommand(commands[i]);
-            }
-            sendCommand("atcra " + PID);
-            sendCommand("atma");
+        //sendCommand("ATZ");
+        sendCommand(atStop);
+
+        for (int i = 0;i < commands.length;i++){
+            sendCommand(commands[i]);
+        }
+        sendCommand("atcra " + PID);
+        sendCommand("atma");
     }
 
 
