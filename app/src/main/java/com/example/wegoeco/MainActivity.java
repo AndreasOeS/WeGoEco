@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
 
         //myRef.setValue("Hello, World!");
-        Intent intent = new Intent(this, BluetoothActivity.class);
+        Intent intent = new Intent(this, BluetoothActivity2.class);
         startActivity(intent);
 
 
